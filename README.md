@@ -1,3 +1,4 @@
 # neonfever
 
-[![Watch the video](images/videothumbnail.png)](videos/gameplay.mp4)
+https://github.com/user-attachments/assets/a95ac41f-2274-48bb-ad59-2620049beedb
+
