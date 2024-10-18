@@ -31,13 +31,21 @@ public class LevelDesigner : MonoBehaviour
         fixedPresetIndex = Mathf.Clamp(fixedPresetIndex, 0, colorPresets.Length - 1);
     }
 
+    /// <summary>
+    /// Sets the level design colors based on the settings in the inspector.
+    /// </summary>
+    /// <remarks>
+    /// If <see cref="useRandomColors"/> is true, the level design colors are randomly generated.
+    /// If <see cref="useFixedPreset"/> is true, the level design colors are chosen from the <see cref="colorPresets"/> array at the index specified by <see cref="fixedPresetIndex"/>.
+    /// If <see cref="useSeed"/> is true, the random number generator is seeded with the current value of <see cref="Random.seed"/>, otherwise it is seeded with the current value of <see cref="DateTime.Now.Ticks"/>.
+    /// </remarks>
     public void SetLevelDesign()
     {
         System.Random random = new System.Random();
 
         if (useRandomColors)
         {
-            float adjustedIntensity = 2 - (0.4169F);
+            float adjustedIntensity = 1.5831F;
 
             float r;
             float g;

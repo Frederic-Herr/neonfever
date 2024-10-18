@@ -67,15 +67,18 @@ public class AudioVisualizer : MonoBehaviour
         StartVisualize(1024);
     }
 
+    /// <summary>
+    /// Sets the line renderers to have the correct number of positions, sets the first three positions to the start position, then builds the rest of the track border by adding a line segment at a time.
+    /// The track border's width is reduced by <see cref="distanceToTrack"/> units per level, but not below <see cref="minMaxTrackWidth.x"/>, and the track border's z position is increased by <see cref="distanceToTrack"/> each time a new line segment is added.
+    /// </summary>
+    /// <param name="leftPoints">The points to use for the left line renderer.</param>
+    /// <param name="rightPoints">The points to use for the right line renderer.</param>
     private void SetLines(Vector3[] leftPoints, Vector3[] rightPoints)
     {
         for (int i = 0; i < leftPoints.Length; i++)
         {
             leftPoints[i] -= new Vector3(i < 1 || i > leftPoints.Length - 2 ? 0 : distanceToTrack, -heightDifference, i < 2 ? distanceToTrack : i > leftPoints.Length - 3 ? -distanceToTrack : 0);
             rightPoints[i] += new Vector3(i < 1 || i > leftPoints.Length - 2 ? 0 : distanceToTrack, heightDifference, i < 2 ? -distanceToTrack : i > leftPoints.Length - 3 ? distanceToTrack : 0);
-
-            //leftPoints[i] -= new Vector3(i > leftPoints.Length - 1 ? 0 : distanceToTrack, -heightDifference, i < 2 ? distanceToTrack : 0);
-            //rightPoints[i] += new Vector3(i < leftPoints.Length - 1 ? 0 : distanceToTrack, heightDifference, i < 2 ? -distanceToTrack : 0);
         }
 
         List<Vector3> allLeftPoints = new List<Vector3>();
@@ -154,6 +157,10 @@ public class AudioVisualizer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the visual effect based on the audio source samples and the left and right line renderer positions.
+    /// The method continuously updates the positions of the line renderers based on the audio samples to create a visual effect.
+    /// </summary>
     async private void SetVisualEffect()
     {
         if (leftLineRenderer && rightLineRenderer)
@@ -195,8 +202,6 @@ public class AudioVisualizer : MonoBehaviour
                     }
                     int sampleIndex = useRandomSample ? rndSample : currentSampleUsageIndex;
 
-                    //for (int i = extraPoints + 1; i < leftLineRenderer.positionCount; i++)
-                    {
                         Vector3 newPos = leftLinePositions[i];
                         Vector3 direction = leftLinePositions[i] - leftLinePositions[i - 1];
                         Vector3 normal = new Vector3(-direction.z, 0f, direction.x);
@@ -205,10 +210,7 @@ public class AudioVisualizer : MonoBehaviour
                         newPos.y = 1f + heightDifference;
                         newPos.z = Mathf.Clamp(newPos.z, leftLinePositions[i].z - 0.5f, leftLinePositions[i].z + 0.5f);
                         leftLineRenderer.SetPosition(i, newPos);
-                    }
-
-                    //for (int i = extraPoints + 1; i < rightLineRenderer.positionCount; i++)
-                    {
+                      
                         Vector3 newPos = rightLinePositions[i];
                         Vector3 direction = rightLinePositions[i] - rightLinePositions[i - 1];
                         Vector3 normal = new Vector3(-direction.z, 0f, direction.x);
@@ -217,7 +219,6 @@ public class AudioVisualizer : MonoBehaviour
                         newPos.y = 1f + heightDifference;
                         newPos.z = Mathf.Clamp(newPos.z, rightLinePositions[i].z - 0.5f, rightLinePositions[i].z + 0.5f);
                         rightLineRenderer.SetPosition(i, newPos);
-                    }
 
                     if (!useRandomSample)
                     {

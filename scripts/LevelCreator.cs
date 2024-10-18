@@ -104,6 +104,9 @@ public class LevelCreator : MonoBehaviour
         return editorLevelNumber;
     }
 
+    /// <summary>
+    /// Sets the random number generator's seed. If <see cref="useEditorLevelSeed"/> is true, the seed is set to the value of <see cref="editorLevelNumber"/>, otherwise it is set to the value of <see cref="seed"/>.
+    /// </summary>
     private void SetSeed()
     {
 #if UNITY_EDITOR
@@ -124,6 +127,10 @@ public class LevelCreator : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// Builds a level. If the game is not playing, it builds an editor level. If the game is playing, it builds a level based on the current level number.
+    /// Sets the random number generator's seed if necessary, clears the level, builds the track border, builds the traps, then triggers the OnLevelCreated event.
+    /// </summary>
     [Button]
     public void BuildLevel()
     {
@@ -148,6 +155,10 @@ public class LevelCreator : MonoBehaviour
         levelDesigner.SetLevelDesign();
     }
 
+    /// <summary>
+    /// Builds traps on the track border. The traps are chosen randomly from the available traps based on the current level.
+    /// The traps are placed randomly on the track border with a random distance between each trap.
+    /// </summary>
     private void BuildTraps()
     {
         int currentPosIndex = 3;
@@ -171,6 +182,11 @@ public class LevelCreator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Builds the track border. Sets the line renderers to have the correct number of positions, sets the first three positions to the start position, then builds the rest of the track border by adding a line segment at a time.
+    /// The track border's width is reduced by <see cref="trackWidthReductionPerLevel"/> units per level, but not below <see cref="minMaxTrackWidth.x"/>.
+    /// The track border's z position is increased by <see cref="zDistance"/> each time a new line segment is added.
+    /// </summary>
     private void BuildTrackBorder()
     {
         if (!gameManager) gameManager = FindObjectOfType<GameManager>();
@@ -188,7 +204,7 @@ public class LevelCreator : MonoBehaviour
 
         for (int i = 3; i < levelLength; i++)
         {
-            currentPos += new Vector3(Random.Range(minMaxTrackX.x, minMaxTrackX.y), 0f, zDistance);// + Random.Range(minMaxTrackZDif.x, minMaxTrackZDif.y));
+            currentPos += new Vector3(Random.Range(minMaxTrackX.x, minMaxTrackX.y), 0f, zDistance);
             leftTrackBorder.SetPosition(i, currentPos);
             float trackWidthReduction = Mathf.Clamp(trackWidthReductionPerLevel * level, 0f, maxTrackWidthReduction);
             float randomMaxWidth = minMaxTrackWidth.y - trackWidthReduction;
@@ -215,6 +231,9 @@ public class LevelCreator : MonoBehaviour
         TargetPos = leftTrackBorder.GetPosition(levelLength - 1);
     }
 
+    /// <summary>
+    /// Clears the level by removing all track border colliders and resetting the track border position count to 3.
+    /// </summary>
     [Button]
     private void ClearLevel()
     {
@@ -248,6 +267,13 @@ public class LevelCreator : MonoBehaviour
         trackColliders.Clear();
     }
 
+    /// <summary>
+    /// Adds a BoxCollider to the given line transform at the specified start and end positions.
+    /// The collider is rotated to align with the line and is given the tag "TrackBorder".
+    /// </summary>
+    /// <param name="lineTransform">The transform of the line to add the collider to.</param>
+    /// <param name="startPos">The starting position of the line.</param>
+    /// <param name="endPos">The ending position of the line.</param>
     private void AddColliderToLine(Transform lineTransform, Vector3 startPos, Vector3 endPos)
     {
         BoxCollider col = new GameObject("TrackBorder").AddComponent<BoxCollider>();
@@ -267,6 +293,10 @@ public class LevelCreator : MonoBehaviour
         col.transform.Rotate(0, angle, 0);
     }
 
+    /// <summary>
+    /// Adds colliders to the track borders. Iterates over the positions in both the left and right track borders, 
+    /// adding a collider between each pair of consecutive positions using the AddColliderToLine method.
+    /// </summary>
     public void AddCollidersToTrack()
     {
         for (int i = 0; i < leftTrackBorder.positionCount; i++)
